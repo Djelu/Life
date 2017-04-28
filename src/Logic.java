@@ -7,13 +7,13 @@ import java.util.Random;
 //import static Params.Params.universeW;
 //import static Params.Params.universeH;
 
-public class Universe {
+public class Logic {
     private int universeW;
     private int universeH;
     private UniverseType universeType;
     private Frame frame;
 
-    public Universe(UniverseType universeType, int universeW, int universeH) {
+    public Logic(UniverseType universeType, int universeW, int universeH) {
         this.universeType = universeType;
         this.universeW = universeW;
         this.universeH = universeH;
@@ -21,7 +21,7 @@ public class Universe {
         int frameY = 0;
         this.frame = new Frame(universeW,universeH,frameX,frameY);
     }
-    public Universe(UniverseType universeType, int universeW, int universeH, int frameWidth, int frameHeight) {
+    public Logic(UniverseType universeType, int universeW, int universeH, int frameWidth, int frameHeight) {
         this.universeType = universeType;
         this.universeW = universeW;
         this.universeH = universeH;
@@ -32,7 +32,7 @@ public class Universe {
 
     public int neighborsCount(int x, int y, Cell[][] gen){
         int count = 0;
-//        if (withSelf && universe[x][y].isALife()) count++;
+//        if (withSelf && logic[x][y].isALife()) count++;
         Point point;
         normalize(point = new Point(x,y)); if (inUniverse(point) && gen[point.x-1][point.y-1].isALife()) count++;
         normalize(point = new Point(x,y)); if (inUniverse(point) && gen[point.x  ][point.y-1].isALife()) count++;
@@ -96,5 +96,9 @@ public class Universe {
                     if(nCount==3         ) gen[i][j].setALife(true );
                 }
             }
+    }
+
+    public Frame getFrame() {
+        return frame;
     }
 }
