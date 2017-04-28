@@ -1,7 +1,8 @@
 public class Game {
-    View view;
-    public Game(View view) {
-        this.view = view;
+
+    Universe universe;
+    public Game(Universe universe) {
+        this.universe = universe;
     }
 
 }

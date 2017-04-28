@@ -2,52 +2,32 @@ import Other.Cell;
 import Other.Frame;
 import Other.Point;
 import Other.UniverseType;
-
 import java.util.Random;
 
-public class View {
-    private UniverseType universeType;
-//    private Cell[][] gen;
+//import static Params.Params.universeW;
+//import static Params.Params.universeH;
+
+public class Universe {
     private int universeW;
     private int universeH;
+    private UniverseType universeType;
     private Frame frame;
 
-    public View(UniverseType universeType, int universeWidth, int universeHeight) {
-        this.universeW = universeWidth;
-        this.universeH = universeHeight;
+    public Universe(UniverseType universeType, int universeW, int universeH) {
+        this.universeType = universeType;
+        this.universeW = universeW;
+        this.universeH = universeH;
         int frameX = 0;
         int frameY = 0;
-        this.frame = new Frame(universeWidth,universeHeight,frameX,frameY);
-        this.universeType = universeType;
+        this.frame = new Frame(universeW,universeH,frameX,frameY);
     }
-    public View(UniverseType universeType, int universeWidth, int universeHeight, int frameWidth, int frameHeight) {
-        this.universeW = universeWidth;
-        this.universeH = universeHeight;
-        int frameX = (universeWidth -frameWidth )/2;
-        int frameY = (universeHeight-frameHeight)/2;
-        this.frame = new Frame(universeWidth,universeHeight,frameX,frameY);
+    public Universe(UniverseType universeType, int universeW, int universeH, int frameWidth, int frameHeight) {
         this.universeType = universeType;
-    }
-
-    public View(UniverseType universeType, Cell[][] gen) {
-        int universeHeight = gen.length;
-        int universeWidth  = gen[0].length;
-        this.universeW = universeWidth;
-        this.universeH = universeHeight;
-        int frameX = 0;
-        int frameY = 0;
-        this.frame = new Frame(universeWidth,universeHeight,frameX,frameY);
-        this.universeType = universeType;
-    }
-    public View(UniverseType universeType, Cell[][] gen, int frameWidth, int frameHeight) {
-        int universeHeight = gen.length;
-        int universeWidth  = gen[0].length;
-        this.universeW = universeWidth;
-        this.universeH = universeHeight;
-        int frameX = (universeWidth -frameWidth )/2;
-        int frameY = (universeHeight-frameHeight)/2;
-        this.frame = new Frame(universeWidth,universeHeight,frameX,frameY);
-        this.universeType = universeType;
+        this.universeW = universeW;
+        this.universeH = universeH;
+        int frameX = (universeW-frameWidth )/2;
+        int frameY = (universeH-frameHeight)/2;
+        this.frame = new Frame(universeW,universeH,frameX,frameY);
     }
 
     public int neighborsCount(int x, int y, Cell[][] gen){
