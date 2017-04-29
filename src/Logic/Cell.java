@@ -1,7 +1,5 @@
 package Logic;
 
-import java.util.Random;
-
 public class Cell {
     private boolean isLife;
 

@@ -1,6 +1,7 @@
 import Logic.Logic;
 import Logic.Cell;
 import Logic.UniverseType;
+import Logic.Gen;
 
 import java.util.ArrayList;
 
@@ -9,78 +10,127 @@ public class Game {
     private int universeH;
     private int speed;
     private boolean sleeping;
-    private ArrayList<Cell[][]> gens;
+    private ArrayList<Gen> gens;
     private Logic logic;
     private Thread th;
 
     public Game(UniverseType universeType, int universeWidth, int universeHeight) {
         this.universeW = universeWidth;
         this.universeH = universeHeight;
+        gens = new ArrayList<Gen>();
         logic = new Logic(universeType,universeWidth,universeHeight);
-        speed = 1;
+        speed = 10;
         sleeping = true;
     }
     public Game(UniverseType universeType, int universeWidth, int universeHeight, int frameWidth, int frameHeight) {
         this.universeW = universeWidth;
         this.universeH = universeHeight;
+        gens = new ArrayList<Gen>();
         logic = new Logic(universeType,universeW,universeH,frameWidth,frameHeight);
-        speed = 1;
+        speed = 10;
         sleeping = true;
     }
 
-    int[][] testGen = new int[][]{
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-    };
-
-    public void firstGen(){
-        gens = new ArrayList<>();
-        Cell[][] gen = new Cell[universeH][universeW];
-//        logic.firstGen(gen);
-        intToCell(testGen,gen);
-        gens.add(gen);
-    }
-
-    private void checkGens(){
-        int count = 0;
+    private int ifHadSameGen(){
+        int numSameGen = -1;
         int last = gens.size()-1;
-        for (int o=last; o>=0; o--) {
-            Cell[][] gen = gens.get(o);
-            for(int i=0; i<gen.length; i++)
-                for(int j=0; j<gen[i].length; j++)
-                    if(gen[i][j].isLife()==gens.get(last)[i][j].isLife())
-                        count++;
+        Gen lastGen = gens.get(last);
+        Cell[][] lastCells = lastGen.getCells();
+        int lastGenAliveCount = lastGen.getAliveCount();
+        for (int o=last-1; o>=0; o--) {
+            Gen gen = gens.get(o);
+            if(gen.getAliveCount()==lastGenAliveCount){
+                int aliveCount = 0;
+                Cell[][] cells = gen.getCells();
+                for(int i=0; i<cells.length; i++)
+                    for(int j=0; j<cells[i].length; j++)
+                        if(cells[i][j].isLife() && lastCells[i][j].isLife())
+                            aliveCount++;
+                if(aliveCount==lastGenAliveCount) {
+                    numSameGen = o+1;
+                    break;
+                }
+            }
         }
+        return numSameGen;
     }
 
-    private void intToCell(int[][] testGen, Cell[][] gen){
-        for(int i=0; i<testGen.length; i++)
-            for(int j=0; j<testGen[0].length; j++)
-                gen[i][j] = new Cell(testGen[i][j]==1);
-    }
-
-    public void nextGen(){
-        Cell[][] gen = new Cell[universeH][universeW];
-        logic.nextGen(gens.get(gens.size()-1),gen);
+    public int nextGen(){
+        int genCount;
+        int aliveCount;
+        Gen gen = new Gen(new Cell[universeH][universeW]);
+        if((genCount = gens.size())==0){//first gen
+            gen.intToCell(new int[][]{
+                    //переодическая
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+                    //стабильная
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+            });
+            aliveCount = 10;
+        }else {
+            aliveCount = logic.nextGen(gens.get(genCount - 1).getCells(), gen.getCells());
+        }
+        gen.setAliveCount(aliveCount);
         gens.add(gen);
+        return genCount+1;
     }
 
     public void setSpeed(int speed) {
@@ -93,7 +143,6 @@ public class Game {
 
     public void newGame(){
         if(!sleeping) stop();
-        firstGen();
         start();
     }
 
@@ -101,10 +150,25 @@ public class Game {
         sleeping = false;
         if(th == null)
             (th = new Thread(()->{
+                int numGen;
+                int numSameGen;
                 while (true){
                     if(!sleeping){
-                        outPut();
-                        nextGen();
+                        print(numGen = nextGen());
+                        if((numSameGen=ifHadSameGen())!=-1){
+                            stop();
+                            System.out.print("\n\nКонец игры. ");
+                            if(numGen-numSameGen==1)
+                                System.out.println("Сложилась стабильная конфигурация.");
+                            else
+                                System.out.println("Сложилась переодическая конфигурация.");
+                            System.out.println("Поколение "+numSameGen+" повторилось в текущем("+numGen+").");
+                            break;
+                        }else
+                            if(gens.get(numGen-1).getAliveCount()==0){
+                                System.out.println("\n\nКонец игры. Не осталось живых клеток.");
+                                break;
+                            }
                         sleep(1000/speed);
                     }
                 }
@@ -119,12 +183,13 @@ public class Game {
         }
     }
 
-    public void outPut(){
-        System.out.println("\n+++++++++++++++++++++++++++++++++++++++");
+    public void print(int numGen){
+        System.out.println("\n+++++++++++++++++++| "+numGen+" |++++++++++++++++++++");
         int last = gens.size()-1;
+        Cell[][] lastCells = gens.get(last).getCells();
         for(int i=0; i<logic.getFrame().getHeight(); i++){
             for(int j=0; j<logic.getFrame().getWidth(); j++)
-                System.out.print((gens.get(last)[i][j].isLife()?1:0)+" ");
+                System.out.print((lastCells[i][j].isLife()?"Ш":" "));
             System.out.println();
         }
     }

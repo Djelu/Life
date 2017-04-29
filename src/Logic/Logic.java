@@ -75,25 +75,28 @@ public class Logic {
 //        if(Math.abs(frame.y)==universeH) frame.y = frame.getDefY();
     }
 
-    public void firstGen(Cell[][] gen){
+    public void firstGen(Cell[][] cells){
         Random random = new Random();
         for(int i=frame.y; i<frame.getHeight(); i++)
             for(int j=frame.x; j<frame.getWidth(); j++)
-                gen[i][j] = new Cell(random.nextBoolean());
+                cells[i][j] = new Cell(random.nextBoolean());
     }
 
-    public void nextGen(Cell[][] lastGen, Cell[][] gen){
+    public int nextGen(Cell[][] lastGen, Cell[][] cells){
+        int aliveCount = 0;
         int nCount;
         for(int i=frame.y; i<frame.getHeight(); i++)
             for(int j=frame.x; j<frame.getWidth(); j++){
-                gen[i][j] = new Cell();
+                cells[i][j] = new Cell();
                 nCount = neighborsCount(j,i,lastGen);
+                boolean alive;
                 if(lastGen[i][j].isLife()){
-                    gen[i][j].setLife(nCount==2||nCount==3);
-                }else {
-                    gen[i][j].setLife(nCount==3);
-                }
+                    if(alive = (nCount==2||nCount==3)) aliveCount++;
+                }else
+                    if(alive = nCount==3) aliveCount++;
+                cells[i][j].setLife(alive);
             }
+        return aliveCount;
     }
 
     public Frame getFrame() {
