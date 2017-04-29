@@ -34,16 +34,16 @@ public class Logic {
         int count = 0;
 //        if (withSelf && logic[x][y].isLife()) count++;
         Point point;
-        normalize(point = new Point(x,y)); if (inUniverse(point.x-1,point.y-1) && gen[point.x-1][point.y-1].isLife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(   point.x  ,point.y-1) && gen[point.x  ][point.y-1].isLife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(point.x+1,point.y-1) && gen[point.x+1][point.y-1].isLife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(point.x-1,point.y-1) && gen[point.y-1][point.x-1].isLife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(   point.x  ,point.y-1) && gen[point.y-1][point.x  ].isLife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(point.x+1,point.y-1) && gen[point.y-1][point.x+1].isLife()) count++;
 
-        normalize(point = new Point(x,y)); if (inUniverse(point.x-1,point.y-1) && gen[point.x-1][point.y  ].isLife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(point.x+1,point.y-1) && gen[point.x+1][point.y  ].isLife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(point.x-1,   point.y  ) && gen[point.y  ][point.x-1].isLife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(point.x+1,   point.y  ) && gen[point.y  ][point.x+1].isLife()) count++;
 
-        normalize(point = new Point(x,y)); if (inUniverse(point.x-1,point.y+1) && gen[point.x-1][point.y+1].isLife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(   point.x  ,point.y+1) && gen[point.x  ][point.y+1].isLife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(point.x+1,point.y+1) && gen[point.x+1][point.y+1].isLife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(point.x-1,point.y+1) && gen[point.y+1][point.x-1].isLife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(   point.x  ,point.y+1) && gen[point.y+1][point.x  ].isLife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(point.x+1,point.y+1) && gen[point.y+1][point.x+1].isLife()) count++;
         return count;
     }
 
@@ -92,9 +92,9 @@ public class Logic {
                 gen[i][j] = new Cell();
                 nCount = neighborsCount(j,i,lastGen);
                 if(lastGen[i][j].isLife()){
-                    if(nCount<2||nCount>3) gen[i][j].setLife(false);
+                    gen[i][j].setLife(nCount==2||nCount==3);
                 }else {
-                    if(nCount==3         ) gen[i][j].setLife(true );
+                    gen[i][j].setLife(nCount==3);
                 }
             }
     }
