@@ -31,7 +31,6 @@ public class Logic {
     public int neighborsCount(int x, int y, Cell[][] gen){
         int count = 0;
         Point point;
-        //normalize(point = new Point(x,y));
         normalize(point = new Point(x-1,y-1)); if (inUniverse(point.x,point.y) && gen[point.y][point.x].isAlive()) count++;
         normalize(point = new Point(   x  ,y-1)); if (inUniverse(point.x,point.y) && gen[point.y][point.x].isAlive()) count++;
         normalize(point = new Point(x+1,y-1)); if (inUniverse(point.x,point.y) && gen[point.y][point.x].isAlive()) count++;
@@ -76,31 +75,32 @@ public class Logic {
 //        if(Math.abs(frame.y)==universeH) frame.y = frame.getDefY();
     }
 
-    public int firstGen(Cell[][] cells){
+    public int firstGen(Cell[][] newGenCells){
+        Random random = new Random();
         int aliveCount = 0;
         boolean alive;
-        Random random = new Random();
         for(int i=frame.y; i<frame.getHeight(); i++)
             for(int j=frame.x; j<frame.getWidth(); j++){
-                cells[i][j] = new Cell(alive = random.nextBoolean());
-                if(alive) aliveCount++;
+                newGenCells[i][j] = new Cell(alive = random.nextBoolean());
+                if(alive)
+                    aliveCount++;
         }
         return aliveCount;
     }
 
-    public int nextGen(Cell[][] lastGenCells, Cell[][] cells){
+    public int nextGen(Cell[][] lastGenCells, Cell[][] newGenCells){
         int aliveCount = 0;
         int nCount;
-        for(int i=0; i<cells.length; i++)
-            for(int j=0; j<cells[i].length; j++){
-                cells[i][j] = new Cell();
+        for(int i=0; i<newGenCells.length; i++)
+            for(int j=0; j<newGenCells[i].length; j++){
+                newGenCells[i][j] = new Cell();
                 nCount = neighborsCount(j,i,lastGenCells);
                 boolean alive;
                 if(lastGenCells[i][j].isAlive()){
                     if(alive = (nCount==2||nCount==3)) aliveCount++;
                 }else
                     if(alive = nCount==3) aliveCount++;
-                cells[i][j].setAlive(alive);
+                newGenCells[i][j].setAlive(alive);
             }
         return aliveCount;
     }
