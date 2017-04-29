@@ -9,7 +9,7 @@ public class Gen {
         this.aliveCount = 0;
     }
 
-    public void intToCell(int[][] intCells){
+    public int intToCell(int[][] intCells){
         boolean alive;
         for(int i=0; i<intCells.length; i++)
             for(int j=0; j<intCells[i].length; j++) {
@@ -17,6 +17,7 @@ public class Gen {
                 if(alive)
                     aliveCount++;
             }
+        return aliveCount;
     }
     public Cell[][] getCells() {
         return cells;

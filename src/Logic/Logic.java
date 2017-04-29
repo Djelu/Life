@@ -31,16 +31,17 @@ public class Logic {
     public int neighborsCount(int x, int y, Cell[][] gen){
         int count = 0;
         Point point;
-        normalize(point = new Point(x,y)); if (inUniverse(point.x-1,point.y-1) && gen[point.y-1][point.x-1].isLife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(   point.x  ,point.y-1) && gen[point.y-1][point.x  ].isLife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(point.x+1,point.y-1) && gen[point.y-1][point.x+1].isLife()) count++;
+        //normalize(point = new Point(x,y));
+        point = new Point(x,y); if (inUniverse(point.x-1,point.y-1) && gen[point.y-1][point.x-1].isLife()) count++;
+        point = new Point(x,y); if (inUniverse(   point.x  ,point.y-1) && gen[point.y-1][point.x  ].isLife()) count++;
+        point = new Point(x,y); if (inUniverse(point.x+1,point.y-1) && gen[point.y-1][point.x+1].isLife()) count++;
 
-        normalize(point = new Point(x,y)); if (inUniverse(point.x-1,   point.y  ) && gen[point.y  ][point.x-1].isLife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(point.x+1,   point.y  ) && gen[point.y  ][point.x+1].isLife()) count++;
+        point = new Point(x,y); if (inUniverse(point.x-1,   point.y  ) && gen[point.y  ][point.x-1].isLife()) count++;
+        point = new Point(x,y); if (inUniverse(point.x+1,   point.y  ) && gen[point.y  ][point.x+1].isLife()) count++;
 
-        normalize(point = new Point(x,y)); if (inUniverse(point.x-1,point.y+1) && gen[point.y+1][point.x-1].isLife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(   point.x  ,point.y+1) && gen[point.y+1][point.x  ].isLife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(point.x+1,point.y+1) && gen[point.y+1][point.x+1].isLife()) count++;
+        point = new Point(x,y); if (inUniverse(point.x-1,point.y+1) && gen[point.y+1][point.x-1].isLife()) count++;
+        point = new Point(x,y); if (inUniverse(   point.x  ,point.y+1) && gen[point.y+1][point.x  ].isLife()) count++;
+        point = new Point(x,y); if (inUniverse(point.x+1,point.y+1) && gen[point.y+1][point.x+1].isLife()) count++;
         return count;
     }
 
