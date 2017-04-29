@@ -1,5 +1,6 @@
-import Other.Cell;
-import Other.UniverseType;
+import Logic.Logic;
+import Logic.Cell;
+import Logic.UniverseType;
 
 import java.util.ArrayList;
 
@@ -58,6 +59,18 @@ public class Game {
         gens.add(gen);
     }
 
+    private void checkGens(){
+        int count = 0;
+        int last = gens.size()-1;
+        for (int o=last; o>=0; o--) {
+            Cell[][] gen = gens.get(o);
+            for(int i=0; i<gen.length; i++)
+                for(int j=0; j<gen[i].length; j++)
+                    if(gen[i][j].isLife()==gens.get(last)[i][j].isLife())
+                        count++;
+        }
+    }
+
     private void intToCell(int[][] testGen, Cell[][] gen){
         for(int i=0; i<testGen.length; i++)
             for(int j=0; j<testGen[0].length; j++)
@@ -88,10 +101,12 @@ public class Game {
         sleeping = false;
         if(th == null)
             (th = new Thread(()->{
-                while (!sleeping){
-                    outPut();
-                    nextGen();
-                    sleep(1000/speed);
+                while (true){
+                    if(!sleeping){
+                        outPut();
+                        nextGen();
+                        sleep(1000/speed);
+                    }
                 }
             })).start();
     }

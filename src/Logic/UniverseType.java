@@ -1,4 +1,4 @@
-package Other;
+package Logic;
 
 public enum UniverseType {
     UNLIMITED,
