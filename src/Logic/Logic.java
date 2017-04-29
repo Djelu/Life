@@ -32,30 +32,30 @@ public class Logic {
         int count = 0;
         Point point;
         //normalize(point = new Point(x,y));
-        point = new Point(x,y); if (inUniverse(point.x-1,point.y-1) && gen[point.y-1][point.x-1].isLife()) count++;
-        point = new Point(x,y); if (inUniverse(   point.x  ,point.y-1) && gen[point.y-1][point.x  ].isLife()) count++;
-        point = new Point(x,y); if (inUniverse(point.x+1,point.y-1) && gen[point.y-1][point.x+1].isLife()) count++;
+        normalize(point = new Point(x-1,y-1)); if (inUniverse(point.x,point.y) && gen[point.y][point.x].isAlive()) count++;
+        normalize(point = new Point(   x  ,y-1)); if (inUniverse(point.x,point.y) && gen[point.y][point.x].isAlive()) count++;
+        normalize(point = new Point(x+1,y-1)); if (inUniverse(point.x,point.y) && gen[point.y][point.x].isAlive()) count++;
 
-        point = new Point(x,y); if (inUniverse(point.x-1,   point.y  ) && gen[point.y  ][point.x-1].isLife()) count++;
-        point = new Point(x,y); if (inUniverse(point.x+1,   point.y  ) && gen[point.y  ][point.x+1].isLife()) count++;
+        normalize(point = new Point(x-1,   y  )); if (inUniverse(point.x,point.y) && gen[point.y][point.x].isAlive()) count++;
+        normalize(point = new Point(x+1,   y  )); if (inUniverse(point.x,point.y) && gen[point.y][point.x].isAlive()) count++;
 
-        point = new Point(x,y); if (inUniverse(point.x-1,point.y+1) && gen[point.y+1][point.x-1].isLife()) count++;
-        point = new Point(x,y); if (inUniverse(   point.x  ,point.y+1) && gen[point.y+1][point.x  ].isLife()) count++;
-        point = new Point(x,y); if (inUniverse(point.x+1,point.y+1) && gen[point.y+1][point.x+1].isLife()) count++;
+        normalize(point = new Point(x-1,y+1)); if (inUniverse(point.x,point.y) && gen[point.y][point.x].isAlive()) count++;
+        normalize(point = new Point(   x  ,y+1)); if (inUniverse(point.x,point.y) && gen[point.y][point.x].isAlive()) count++;
+        normalize(point = new Point(x+1,y+1)); if (inUniverse(point.x,point.y) && gen[point.y][point.x].isAlive()) count++;
         return count;
     }
 
     private void normalize(Point point){
         switch (universeType){
             case CLOSED:{
-                if(point.x<0) point.x = universeW-point.x; else if(point.x>=universeW)point.x = point.x-universeW;
-                if(point.y<0) point.y = universeH-point.y; else if(point.y>=universeH)point.y = point.y-universeH;
+                if(point.x<0) point.x = universeW+point.x; else if(point.x>=universeW)point.x = point.x-universeW;
+                if(point.y<0) point.y = universeH+point.y; else if(point.y>=universeH)point.y = point.y-universeH;
             }break;
             case CLOSED_BY_HORIZONTAL:{
-                if(point.x<0) point.x = universeW-point.x; else if(point.x>=universeW)point.x = point.x-universeW;
+                if(point.x<0) point.x = universeW+point.x; else if(point.x>=universeW)point.x = point.x-universeW;
             }break;
             case CLOSED_BY_VERTICAL:{
-                if(point.y<0) point.y = universeH-point.y; else if(point.y>=universeH)point.y = point.y-universeH;
+                if(point.y<0) point.y = universeH+point.y; else if(point.y>=universeH)point.y = point.y-universeH;
             }break;
             default:{
                 if(point.x<0) point.x = 0; else if(point.x>=universeW)point.x = universeW-1;
@@ -76,29 +76,35 @@ public class Logic {
 //        if(Math.abs(frame.y)==universeH) frame.y = frame.getDefY();
     }
 
-    public void firstGen(Cell[][] cells){
+    public int firstGen(Cell[][] cells){
+        int aliveCount = 0;
+        boolean alive;
         Random random = new Random();
         for(int i=frame.y; i<frame.getHeight(); i++)
-            for(int j=frame.x; j<frame.getWidth(); j++)
-                cells[i][j] = new Cell(random.nextBoolean());
+            for(int j=frame.x; j<frame.getWidth(); j++){
+                cells[i][j] = new Cell(alive = random.nextBoolean());
+                if(alive) aliveCount++;
+        }
+        return aliveCount;
     }
 
-    public int nextGen(Cell[][] lastGen, Cell[][] cells){
+    public int nextGen(Cell[][] lastGenCells, Cell[][] cells){
         int aliveCount = 0;
         int nCount;
-        for(int i=frame.y; i<frame.getHeight(); i++)
-            for(int j=frame.x; j<frame.getWidth(); j++){
+        for(int i=0; i<cells.length; i++)
+            for(int j=0; j<cells[i].length; j++){
                 cells[i][j] = new Cell();
-                nCount = neighborsCount(j,i,lastGen);
+                nCount = neighborsCount(j,i,lastGenCells);
                 boolean alive;
-                if(lastGen[i][j].isLife()){
+                if(lastGenCells[i][j].isAlive()){
                     if(alive = (nCount==2||nCount==3)) aliveCount++;
                 }else
                     if(alive = nCount==3) aliveCount++;
-                cells[i][j].setLife(alive);
+                cells[i][j].setAlive(alive);
             }
         return aliveCount;
     }
+
 
     public Frame getFrame() {
         return frame;

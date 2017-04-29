@@ -1,21 +1,21 @@
 package Logic;
 
 public class Cell {
-    private boolean isLife;
+    private boolean alive;
 
     public Cell() {
-        this.isLife = false;
+        this.alive = false;
     }
 
-    public Cell(boolean isLife) {
-        this.isLife = isLife;
+    public Cell(boolean alive) {
+        this.alive = alive;
     }
 
-    public boolean isLife() {
-        return isLife;
+    public boolean isAlive() {
+        return alive;
     }
 
-    public void setLife(boolean life) {
-        isLife = life;
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 }
