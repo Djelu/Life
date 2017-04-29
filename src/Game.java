@@ -19,22 +19,55 @@ public class Game {
         speed = 1;
         sleeping = true;
     }
-    public Game(UniverseType universeType, int universeW, int universeH, int frameWidth, int frameHeight) {
+    public Game(UniverseType universeType, int universeWidth, int universeHeight, int frameWidth, int frameHeight) {
+        this.universeW = universeWidth;
+        this.universeH = universeHeight;
         logic = new Logic(universeType,universeW,universeH,frameWidth,frameHeight);
-        gens = new ArrayList<>();
         speed = 1;
         sleeping = true;
     }
 
+    int[][] testGen = new int[][]{{
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,
+            0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+            0,0,0,0,0,1,0,1,1,1,1,1,1,0,1,0,0,0,0,0,
+            0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,
+            0,0,0,0,0,1,0,1,1,1,1,1,1,0,1,0,0,0,0,0,
+            0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
+            0,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    }};
+
     public void firstGen(){
         gens = new ArrayList<>();
-        gens.add(new Cell[universeH][universeW]);
+        Cell[][] gen = new Cell[universeH][universeW];
+//        logic.firstGen(gen);
+        intToCell(testGen,gen);
+        gens.add(gen);
+    }
+
+    private void intToCell(int[][] testGen, Cell[][] gen){
+        for(int i=0; i<testGen.length; i++)
+            for(int j=0; j<testGen[0].length; j++)
+                gen[i][j].setLife(testGen[i][j]==1);
     }
 
     public void nextGen(){
-        int size = gens.size();
-        gens.add(new Cell[universeH][universeW]);
-        logic.nextGen(gens.get(size-1),gens.get(size));
+        Cell[][] gen = new Cell[universeH][universeW];
+        logic.nextGen(gens.get(gens.size()-1),gen);
+        gens.add(gen);
     }
 
     public void setSpeed(int speed) {
@@ -43,7 +76,7 @@ public class Game {
 
     public void start(){
         sleeping = false;
-        if(th != null)
+        if(th == null)
             (th = new Thread(()->{
                 while (!sleeping){
                     outPut();
@@ -66,6 +99,7 @@ public class Game {
     }
 
     public void newGame(){
+        if(!sleeping) stop();
         firstGen();
         start();
     }
@@ -75,7 +109,7 @@ public class Game {
         int last = gens.size()-1;
         for(int i=0; i<logic.getFrame().getHeight(); i++){
             for(int j=0; j<logic.getFrame().getWidth(); j++)
-                System.out.print((gens.get(last)[i][j].isALife()?1:0)+" ");
+                System.out.print((gens.get(last)[i][j].isLife()?1:0)+" ");
             System.out.println();
         }
     }

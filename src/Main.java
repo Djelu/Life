@@ -7,7 +7,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        Game game = new Game(UniverseType.LIMITED,10,10,10,10);
+        Game game = new Game(UniverseType.LIMITED,20,20,20,20);
         game.newGame();
         Thread.sleep(10000);
         game.stop();

@@ -32,18 +32,18 @@ public class Logic {
 
     public int neighborsCount(int x, int y, Cell[][] gen){
         int count = 0;
-//        if (withSelf && logic[x][y].isALife()) count++;
+//        if (withSelf && logic[x][y].isLife()) count++;
         Point point;
-        normalize(point = new Point(x,y)); if (inUniverse(point) && gen[point.x-1][point.y-1].isALife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(point) && gen[point.x  ][point.y-1].isALife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(point) && gen[point.x+1][point.y-1].isALife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(point.x-1,point.y-1) && gen[point.x-1][point.y-1].isLife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(   point.x  ,point.y-1) && gen[point.x  ][point.y-1].isLife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(point.x+1,point.y-1) && gen[point.x+1][point.y-1].isLife()) count++;
 
-        normalize(point = new Point(x,y)); if (inUniverse(point) && gen[point.x-1][point.y  ].isALife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(point) && gen[point.x+1][point.y  ].isALife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(point.x-1,point.y-1) && gen[point.x-1][point.y  ].isLife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(point.x+1,point.y-1) && gen[point.x+1][point.y  ].isLife()) count++;
 
-        normalize(point = new Point(x,y)); if (inUniverse(point) && gen[point.x-1][point.y+1].isALife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(point) && gen[point.x  ][point.y+1].isALife()) count++;
-        normalize(point = new Point(x,y)); if (inUniverse(point) && gen[point.x+1][point.y+1].isALife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(point.x-1,point.y+1) && gen[point.x-1][point.y+1].isLife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(   point.x  ,point.y+1) && gen[point.x  ][point.y+1].isLife()) count++;
+        normalize(point = new Point(x,y)); if (inUniverse(point.x+1,point.y+1) && gen[point.x+1][point.y+1].isLife()) count++;
         return count;
     }
 
@@ -66,9 +66,9 @@ public class Logic {
         }
     }
 
-    private boolean inUniverse(Point point){
-        return !((((point.x < 0)||(point.x >= universeW))&&((universeType!=UniverseType.CLOSED_BY_HORIZONTAL && universeType!= UniverseType.CLOSED))) ||
-                 (((point.y < 0)||(point.y >= universeH))&&((universeType!=UniverseType.CLOSED_BY_VERTICAL   && universeType!=UniverseType.CLOSED))));
+    private boolean inUniverse(int x, int y){
+        return !((((x < 0)||(x >= universeW))&&((universeType!=UniverseType.CLOSED_BY_HORIZONTAL && universeType!= UniverseType.CLOSED))) ||
+                 (((y < 0)||(y >= universeH))&&((universeType!=UniverseType.CLOSED_BY_VERTICAL   && universeType!=UniverseType.CLOSED))));
     }
 
     public void moveFrame(int mx, int my){
@@ -89,11 +89,12 @@ public class Logic {
         int nCount;
         for(int i=frame.y; i<frame.getHeight(); i++)
             for(int j=frame.x; j<frame.getWidth(); j++){
+                gen[i][j] = new Cell();
                 nCount = neighborsCount(j,i,lastGen);
-                if(lastGen[i][j].isALife()){
-                    if(nCount<2||nCount>3) gen[i][j].setALife(false);
+                if(lastGen[i][j].isLife()){
+                    if(nCount<2||nCount>3) gen[i][j].setLife(false);
                 }else {
-                    if(nCount==3         ) gen[i][j].setALife(true );
+                    if(nCount==3         ) gen[i][j].setLife(true );
                 }
             }
     }

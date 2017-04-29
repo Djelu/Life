@@ -3,21 +3,21 @@ package Other;
 import java.util.Random;
 
 public class Cell {
-    private boolean isALife;
+    private boolean isLife;
 
     public Cell() {
-        this.isALife = new Random().nextBoolean();
+        this.isLife = false;
     }
 
-    public Cell(boolean isALife) {
-        this.isALife = isALife;
+    public Cell(boolean isLife) {
+        this.isLife = isLife;
     }
 
-    public boolean isALife() {
-        return isALife;
+    public boolean isLife() {
+        return isLife;
     }
 
-    public void setALife(boolean ALife) {
-        isALife = ALife;
+    public void setLife(boolean life) {
+        isLife = life;
     }
 }
