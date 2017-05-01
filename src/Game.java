@@ -32,10 +32,15 @@ public class Game extends Application{
     private Tile[][] grid;
     private Thread thread;
     private Task task;
+    private Scene scene;
 
     private Button button;
+    private Button buttonChanging;
     private Label labelTextGen;
     private Label labelNumGen;
+    private Label labelWidth;
+    private Label labelHeight;
+    private Label labelX;
     private Label labelTextSpeed;
     private Label labelNumSpeed;
     private CheckBox checkBoxLeft;
@@ -43,6 +48,9 @@ public class Game extends Application{
     private CheckBox checkBoxTop;
     private CheckBox checkBoxBot;
     private ScrollBar scrollBar;
+    private TextField textFieldWidth;
+    private TextField textFieldHeight;
+
 
     public static void main(String[] args) {
         launch(args);
@@ -97,22 +105,24 @@ public class Game extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        gens = new ArrayList<Gen>();
-        UNIVERSE_TYPE = UniverseType.CLOSED_BY_HORIZONTAL;
-        logic = new Logic(TILES_COUNT_W, TILES_COUNT_H);
-        sleeping = true;
-        stoped = false;
-
-        grid = new Tile[TILES_COUNT_H][TILES_COUNT_W];
-
-        Scene scene = new Scene(createContent());
+        clearAll(TILES_COUNT_W,TILES_COUNT_H);
+        scene = new Scene(createContent());
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.setTitle("Game of life");
         primaryStage.show();
     }
 
-    private Parent createContent() {
+    private void clearAll(int width, int height){
+//        gens.clear();
+        gens = new ArrayList<Gen>();
+        logic = new Logic(width, height);
+        sleeping = true;
+        stoped = false;
+        grid = new Tile[height][width];
+    }
+
+    private Parent createContent(){
         Pane root = new Pane();
         root.setPrefSize(FORM_WIDTH, FORM_HEIGHT);
 
@@ -128,7 +138,15 @@ public class Game extends Application{
         button.setPrefSize(100,35);
         button.setText("Старт");
         button.setOnMouseClicked(event -> go());
-        root.getChildren().add(button);
+//        buttonChanging = new Button();
+//        buttonChanging.setPrefSize(80,30);
+//        buttonChanging.setText("Применить");
+//        buttonChanging.setOnMouseClicked(event -> {
+//            int w = (FORM_WIDTH -HORIZ_SPACE*2)/Integer.parseInt(textFieldWidth .getText());
+//            int h = (FORM_HEIGHT-VERT_SPACE *2)/Integer.parseInt(textFieldHeight.getText());
+//            TILE_SIZE = w<h ?w :h ;
+//        });
+        root.getChildren().addAll(button/*,buttonChanging*/);
 
 
         labelTextGen = new Label();
@@ -140,8 +158,18 @@ public class Game extends Application{
         labelTextSpeed.setText("Скорость смены поколений:");
         labelNumSpeed = new Label();
         labelNumSpeed.setText("3");
-        root.getChildren().addAll(labelNumGen,labelTextGen,labelTextSpeed,labelNumSpeed);
 
+//        labelX= new Label();
+//        labelX.setText(" X ");
+        root.getChildren().addAll(labelNumGen,labelTextGen,labelTextSpeed,labelNumSpeed/*,labelX*/);
+
+//        textFieldWidth = new TextField();
+//        textFieldWidth.setPrefSize(50,20);
+//        textFieldWidth.setText(String.valueOf(TILES_COUNT_W));
+//        textFieldHeight = new TextField();
+//        textFieldHeight.setPrefSize(50,20);
+//        textFieldHeight.setText(String.valueOf(TILES_COUNT_H));
+//        root.getChildren().addAll(textFieldHeight,textFieldWidth);
 
         checkBoxTop = new CheckBox();
         checkBoxTop.setText("Замкнуть");
@@ -192,11 +220,7 @@ public class Game extends Application{
         scrollBar.setMin(1);
         scrollBar.setMax(100);
         scrollBar.setValue(10);
-        scrollBar.valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<? extends Number> ov,Number old_val, Number new_val) {
-                labelNumSpeed.setText(String.valueOf(SPEED=new_val.intValue()));
-            }
-        });
+        scrollBar.valueProperty().addListener((ov, old_val, new_val) -> labelNumSpeed.setText(String.valueOf(SPEED=new_val.intValue())));
         root.getChildren().add(scrollBar);
 
         updateContentPosition();
@@ -207,8 +231,11 @@ public class Game extends Application{
         button.setTranslateX(FORM_WIDTH-FORM_WIDTH/7);
         button.setTranslateY(FORM_HEIGHT-VERT_SPACE*3/4);
 
+//        buttonChanging.setTranslateX(FORM_WIDTH-HORIZ_SPACE-50);
+//        buttonChanging.setTranslateY(VERT_SPACE/2-15);
+
         labelTextGen.setTranslateX(HORIZ_SPACE);
-        labelTextGen.setTranslateY(VERT_SPACE-25);
+        labelTextGen.setTranslateY(VERT_SPACE-20);
 
         labelNumGen.setTranslateX(HORIZ_SPACE+130);
         labelNumGen.setTranslateY(VERT_SPACE-25);
@@ -218,6 +245,15 @@ public class Game extends Application{
 
         labelNumSpeed.setTranslateX(HORIZ_SPACE+165);
         labelNumSpeed.setTranslateY(VERT_SPACE+TILES_COUNT_H*TILE_SIZE+5);
+
+//        textFieldHeight.setTranslateX(FORM_WIDTH-HORIZ_SPACE-100-25);
+//        textFieldHeight.setTranslateY(VERT_SPACE/2-15);
+//
+//        textFieldWidth.setTranslateX(FORM_WIDTH-HORIZ_SPACE-200-25);
+//        textFieldWidth.setTranslateY(VERT_SPACE/2-15);
+//
+//        labelX.setTranslateX(FORM_WIDTH-HORIZ_SPACE-130-25);
+//        labelX.setTranslateY(VERT_SPACE/2-12);
 
         checkBoxTop.setTranslateX(FORM_WIDTH/2);
         checkBoxTop.setTranslateY(VERT_SPACE/2-checkBoxTop.getHeight()/2);

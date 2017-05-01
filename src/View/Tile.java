@@ -45,4 +45,10 @@ public class Tile extends StackPane{
         this.colored = colored;
         updateColor();
     }
+
+    public void reRect(){
+        border = new Rectangle(TILE_SIZE - 2, TILE_SIZE - 2);
+        setTranslateX(HORIZ_SPACE+x * TILE_SIZE);
+        setTranslateY(VERT_SPACE+y * TILE_SIZE);
+    }
 }
