@@ -1,6 +1,6 @@
 package Logic;
 
-import View.Tile;
+import Graphic.Tile;
 
 import static Logic.Parameters.UNIVERSE_TYPE;
 import static Logic.UniverseType.CLOSED;

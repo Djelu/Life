@@ -1,4 +1,4 @@
-package View;
+package Graphic;
 
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;

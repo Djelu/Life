@@ -2,19 +2,13 @@ import Logic.Logic;
 import Logic.Cell;
 import Logic.UniverseType;
 import Logic.Gen;
-import View.Tile;
+import Graphic.Tile;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -35,12 +29,8 @@ public class Game extends Application{
     private Scene scene;
 
     private Button button;
-    private Button buttonChanging;
     private Label labelTextGen;
     private Label labelNumGen;
-    private Label labelWidth;
-    private Label labelHeight;
-    private Label labelX;
     private Label labelTextSpeed;
     private Label labelNumSpeed;
     private CheckBox checkBoxLeft;
@@ -48,9 +38,6 @@ public class Game extends Application{
     private CheckBox checkBoxTop;
     private CheckBox checkBoxBot;
     private ScrollBar scrollBar;
-    private TextField textFieldWidth;
-    private TextField textFieldHeight;
-
 
     public static void main(String[] args) {
         launch(args);
@@ -114,7 +101,6 @@ public class Game extends Application{
     }
 
     private void clearAll(int width, int height){
-//        gens.clear();
         gens = new ArrayList<Gen>();
         logic = new Logic(width, height);
         sleeping = true;
@@ -138,15 +124,7 @@ public class Game extends Application{
         button.setPrefSize(100,35);
         button.setText("Старт");
         button.setOnMouseClicked(event -> go());
-//        buttonChanging = new Button();
-//        buttonChanging.setPrefSize(80,30);
-//        buttonChanging.setText("Применить");
-//        buttonChanging.setOnMouseClicked(event -> {
-//            int w = (FORM_WIDTH -HORIZ_SPACE*2)/Integer.parseInt(textFieldWidth .getText());
-//            int h = (FORM_HEIGHT-VERT_SPACE *2)/Integer.parseInt(textFieldHeight.getText());
-//            TILE_SIZE = w<h ?w :h ;
-//        });
-        root.getChildren().addAll(button/*,buttonChanging*/);
+        root.getChildren().addAll(button);
 
 
         labelTextGen = new Label();
@@ -159,17 +137,7 @@ public class Game extends Application{
         labelNumSpeed = new Label();
         labelNumSpeed.setText("3");
 
-//        labelX= new Label();
-//        labelX.setText(" X ");
-        root.getChildren().addAll(labelNumGen,labelTextGen,labelTextSpeed,labelNumSpeed/*,labelX*/);
-
-//        textFieldWidth = new TextField();
-//        textFieldWidth.setPrefSize(50,20);
-//        textFieldWidth.setText(String.valueOf(TILES_COUNT_W));
-//        textFieldHeight = new TextField();
-//        textFieldHeight.setPrefSize(50,20);
-//        textFieldHeight.setText(String.valueOf(TILES_COUNT_H));
-//        root.getChildren().addAll(textFieldHeight,textFieldWidth);
+        root.getChildren().addAll(labelNumGen,labelTextGen,labelTextSpeed,labelNumSpeed);
 
         checkBoxTop = new CheckBox();
         checkBoxTop.setText("Замкнуть");
@@ -231,29 +199,17 @@ public class Game extends Application{
         button.setTranslateX(FORM_WIDTH-FORM_WIDTH/7);
         button.setTranslateY(FORM_HEIGHT-VERT_SPACE*3/4);
 
-//        buttonChanging.setTranslateX(FORM_WIDTH-HORIZ_SPACE-50);
-//        buttonChanging.setTranslateY(VERT_SPACE/2-15);
-
         labelTextGen.setTranslateX(HORIZ_SPACE);
         labelTextGen.setTranslateY(VERT_SPACE-20);
 
         labelNumGen.setTranslateX(HORIZ_SPACE+130);
-        labelNumGen.setTranslateY(VERT_SPACE-25);
+        labelNumGen.setTranslateY(VERT_SPACE-20);
 
         labelTextSpeed.setTranslateX(HORIZ_SPACE);
         labelTextSpeed.setTranslateY(VERT_SPACE+TILES_COUNT_H*TILE_SIZE+5);
 
         labelNumSpeed.setTranslateX(HORIZ_SPACE+165);
         labelNumSpeed.setTranslateY(VERT_SPACE+TILES_COUNT_H*TILE_SIZE+5);
-
-//        textFieldHeight.setTranslateX(FORM_WIDTH-HORIZ_SPACE-100-25);
-//        textFieldHeight.setTranslateY(VERT_SPACE/2-15);
-//
-//        textFieldWidth.setTranslateX(FORM_WIDTH-HORIZ_SPACE-200-25);
-//        textFieldWidth.setTranslateY(VERT_SPACE/2-15);
-//
-//        labelX.setTranslateX(FORM_WIDTH-HORIZ_SPACE-130-25);
-//        labelX.setTranslateY(VERT_SPACE/2-12);
 
         checkBoxTop.setTranslateX(FORM_WIDTH/2);
         checkBoxTop.setTranslateY(VERT_SPACE/2-checkBoxTop.getHeight()/2);
