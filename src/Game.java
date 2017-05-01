@@ -14,12 +14,12 @@ public class Game {
     private Logic logic;
     private Thread th;
 
-    public Game(UniverseType universeType, int universeWidth, int universeHeight) {
+    public Game(UniverseType universeType, int universeWidth, int universeHeight, int speed) {
         this.universeW = universeWidth;
         this.universeH = universeHeight;
+        this.speed = speed;
         gens = new ArrayList<Gen>();
         logic = new Logic(universeType,universeWidth,universeHeight);
-        speed = 3;
         sleeping = true;
     }
 
