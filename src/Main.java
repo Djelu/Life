@@ -1,13 +1,18 @@
 import Logic.UniverseType;
 
-//import static Params.Params.universeH;
-//import static Params.Params.universeW;
-
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        Game game = new Game(UniverseType.CLOSED,20,20,20,20);
+        //Величина вселенной (в клетках)
+        int width = 20;
+        int height= 20;
+
+        UniverseType universeType = UniverseType.CLOSED;              //замкнутая(неограниченная) со всех сторон
+                                    //UniverseType.LIMITED;             //ограниченная со всех сторон
+                                    //UniverseType.CLOSED_BY_VERTICAL;  //замкнутая по вертикали
+                                    //UniverseType.CLOSED_BY_HORIZONTAL;//замкнутая по горизонтали
+        Game game = new Game(universeType,width,height);
         game.newGame();
     }
 }

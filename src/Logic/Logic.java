@@ -2,30 +2,15 @@ package Logic;
 
 import java.util.Random;
 
-//import static Params.Params.universeW;
-//import static Params.Params.universeH;
-
 public class Logic {
     private int universeW;
     private int universeH;
     private UniverseType universeType;
-    private Frame frame;
 
     public Logic(UniverseType universeType, int universeW, int universeH) {
         this.universeType = universeType;
         this.universeW = universeW;
         this.universeH = universeH;
-        int frameX = 0;
-        int frameY = 0;
-        this.frame = new Frame(universeW,universeH,frameX,frameY);
-    }
-    public Logic(UniverseType universeType, int universeW, int universeH, int frameWidth, int frameHeight) {
-        this.universeType = universeType;
-        this.universeW = universeW;
-        this.universeH = universeH;
-        int frameX = (universeW-frameWidth )/2;
-        int frameY = (universeH-frameHeight)/2;
-        this.frame = new Frame(universeW,universeH,frameX,frameY);
     }
 
     public int neighborsCount(int x, int y, Cell[][] gen){
@@ -68,19 +53,12 @@ public class Logic {
                  (((y < 0)||(y >= universeH))&&((universeType!=UniverseType.CLOSED_BY_VERTICAL   && universeType!=UniverseType.CLOSED))));
     }
 
-    public void moveFrame(int mx, int my){
-        frame.x+=mx;
-        frame.y+=my;
-//        if(Math.abs(frame.x)==universeW) frame.x = frame.getDefX();
-//        if(Math.abs(frame.y)==universeH) frame.y = frame.getDefY();
-    }
-
     public int firstGen(Cell[][] newGenCells){
         Random random = new Random();
         int aliveCount = 0;
         boolean alive;
-        for(int i=frame.y; i<frame.getHeight(); i++)
-            for(int j=frame.x; j<frame.getWidth(); j++){
+        for(int i=0; i<newGenCells.length; i++)
+            for(int j=0; j<newGenCells[i].length; j++){
                 newGenCells[i][j] = new Cell(alive = random.nextBoolean());
                 if(alive)
                     aliveCount++;
@@ -103,10 +81,5 @@ public class Logic {
                 newGenCells[i][j].setAlive(alive);
             }
         return aliveCount;
-    }
-
-
-    public Frame getFrame() {
-        return frame;
     }
 }
