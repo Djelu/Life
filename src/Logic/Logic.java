@@ -2,13 +2,16 @@ package Logic;
 
 import View.Tile;
 
+import static Logic.Parameters.UNIVERSE_TYPE;
+import static Logic.UniverseType.CLOSED;
+import static Logic.UniverseType.CLOSED_BY_HORIZONTAL;
+import static Logic.UniverseType.CLOSED_BY_VERTICAL;
+
 public class Logic {
     private int universeW;
     private int universeH;
-    private UniverseType universeType;
 
-    public Logic(UniverseType universeType, int universeW, int universeH) {
-        this.universeType = universeType;
+    public Logic(int universeW, int universeH) {
         this.universeW = universeW;
         this.universeH = universeH;
     }
@@ -30,7 +33,7 @@ public class Logic {
     }
 
     private void normalize(Point point){
-        switch (universeType){
+        switch (UNIVERSE_TYPE){
             case CLOSED:{
                 if(point.x<0) point.x = universeW+point.x; else if(point.x>=universeW)point.x = point.x-universeW;
                 if(point.y<0) point.y = universeH+point.y; else if(point.y>=universeH)point.y = point.y-universeH;
@@ -49,8 +52,8 @@ public class Logic {
     }
 
     private boolean inUniverse(int x, int y){
-        return !((((x < 0)||(x >= universeW))&&((universeType!=UniverseType.CLOSED_BY_HORIZONTAL && universeType!= UniverseType.CLOSED))) ||
-                 (((y < 0)||(y >= universeH))&&((universeType!=UniverseType.CLOSED_BY_VERTICAL   && universeType!=UniverseType.CLOSED))));
+        return !((((x < 0)||(x >= universeW))&&((UNIVERSE_TYPE!= CLOSED_BY_HORIZONTAL && UNIVERSE_TYPE!= CLOSED))) ||
+                 (((y < 0)||(y >= universeH))&&((UNIVERSE_TYPE!= CLOSED_BY_VERTICAL   && UNIVERSE_TYPE!= CLOSED))));
     }
 
     public int firstGen(Cell[][] newGenCells, Tile[][] grid){

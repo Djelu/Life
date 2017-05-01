@@ -4,7 +4,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-import static sun.dc.pr.Rasterizer.TILE_SIZE;
+import static Logic.Parameters.HORIZ_SPACE;
+import static Logic.Parameters.TILE_SIZE;
+import static Logic.Parameters.VERT_SPACE;
 
 public class Tile extends StackPane{
     private int x, y;
@@ -20,8 +22,8 @@ public class Tile extends StackPane{
         border.setFill(Color.LIGHTGRAY);
         getChildren().addAll(border);
 
-        setTranslateX(x * TILE_SIZE);
-        setTranslateY(y * TILE_SIZE);
+        setTranslateX(HORIZ_SPACE+x * TILE_SIZE);
+        setTranslateY(VERT_SPACE+y * TILE_SIZE);
 
         setOnMouseClicked(e->click());
     }

@@ -5,11 +5,16 @@ import Logic.Gen;
 import View.Tile;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -18,40 +23,29 @@ import java.util.ArrayList;
 import static Logic.Parameters.*;
 
 public class Game extends Application{
-//    private int universeW;
-//    private int universeH;
+
     private boolean stoped;
     private boolean sleeping;
     private ArrayList<Gen> gens;
     private Logic logic;
 
     private Tile[][] grid;
-    private Scene scene;
-    private Button button;
     private Thread thread;
     private Task task;
-//    public Game(UniverseType universeType, int universeWidth, int universeHeight, int speed) {
-//        this.universeW = universeWidth;
-//        this.universeH = universeHeight;
-//        this.speed = speed;
-//    }
+
+    private Button button;
+    private Label labelTextGen;
+    private Label labelNumGen;
+    private Label labelTextSpeed;
+    private Label labelNumSpeed;
+    private CheckBox checkBoxLeft;
+    private CheckBox checkBoxRight;
+    private CheckBox checkBoxTop;
+    private CheckBox checkBoxBot;
+    private ScrollBar scrollBar;
 
     public static void main(String[] args) {
-//        //Величина вселенной (в клетках)
-//        int width = 20;
-//        int height= 20;
-//
-//        //скорость жизни (1000мс/speed)
-//        int speed = 10;
-//
-//        UniverseType universeType = UniverseType.CLOSED;              //замкнутая(неограниченная) со всех сторон
-//        //UniverseType.LIMITED;             //ограниченная со всех сторон
-//        //UniverseType.CLOSED_BY_VERTICAL;  //замкнутая по вертикали
-//        //UniverseType.CLOSED_BY_HORIZONTAL;//замкнутая по горизонтали
-//
-//        new Game(universeType,width,height,speed);
         launch(args);
-        //        game.newGame();
     }
 
     private int ifHadSameGen(){
@@ -88,7 +82,7 @@ public class Game extends Application{
             result = genCount;
             gens.get(genCount-1).setAliveCount(aliveCount);
         }else {
-            Gen gen = new Gen(new Cell[TILES_HEIGHT][TILES_WIDTH]);
+            Gen gen = new Gen(new Cell[TILES_COUNT_H][TILES_COUNT_W]);
             if (genCount == 0) {//first gen
                 aliveCount = logic.firstGen(gen.getCells(), grid);
             } else {
@@ -104,24 +98,26 @@ public class Game extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
         gens = new ArrayList<Gen>();
-        logic = new Logic(UniverseType.CLOSED, TILES_WIDTH, TILES_HEIGHT);
+        UNIVERSE_TYPE = UniverseType.CLOSED_BY_HORIZONTAL;
+        logic = new Logic(TILES_COUNT_W, TILES_COUNT_H);
         sleeping = true;
         stoped = false;
 
-        grid = new Tile[TILES_HEIGHT][TILES_WIDTH];
+        grid = new Tile[TILES_COUNT_H][TILES_COUNT_W];
 
-        scene = new Scene(createContent());
+        Scene scene = new Scene(createContent());
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.setTitle("Game of life");
         primaryStage.show();
-
     }
 
     private Parent createContent() {
         Pane root = new Pane();
         root.setPrefSize(FORM_WIDTH, FORM_HEIGHT);
 
-        for (int y = 0; y < TILES_HEIGHT; y++) {
-            for (int x = 0; x < TILES_WIDTH; x++) {
+        for (int y = 0; y < TILES_COUNT_H; y++) {
+            for (int x = 0; x < TILES_COUNT_W; x++) {
                 Tile tile = new Tile(x, y, false);
                 grid[y][x] = tile;
                 root.getChildren().add(tile);
@@ -129,23 +125,119 @@ public class Game extends Application{
         }
 
         button = new Button();
-        button.setTranslateX(FORM_WIDTH/2);
-        button.setTranslateY(FORM_HEIGHT-FORM_HEIGHT/10);
-        button.setPrefSize(100,50);
-        button.setOnMouseClicked(event -> newGame());
+        button.setPrefSize(100,35);
+        button.setText("Старт");
+        button.setOnMouseClicked(event -> go());
         root.getChildren().add(button);
 
+
+        labelTextGen = new Label();
+        labelTextGen.setText("Поколение номер: ");
+        labelNumGen = new Label();
+        labelNumGen.setText("1");
+
+        labelTextSpeed = new Label();
+        labelTextSpeed.setText("Скорость смены поколений:");
+        labelNumSpeed = new Label();
+        labelNumSpeed.setText("3");
+        root.getChildren().addAll(labelNumGen,labelTextGen,labelTextSpeed,labelNumSpeed);
+
+
+        checkBoxTop = new CheckBox();
+        checkBoxTop.setText("Замкнуть");
+        checkBoxTop.setSelected(false);
+        checkBoxTop.selectedProperty().addListener((ov, old_val, new_val) -> {
+            checkBoxBot.setSelected(new_val);
+            boolean closedByHorizontal = checkBoxLeft.isSelected()&&checkBoxRight.isSelected();
+            UNIVERSE_TYPE = new_val
+                    ?(closedByHorizontal ?UniverseType.CLOSED :UniverseType.CLOSED_BY_VERTICAL)
+                    :(closedByHorizontal ?UniverseType.CLOSED_BY_HORIZONTAL :UniverseType.LIMITED);
+        });
+
+
+        checkBoxBot = new CheckBox();
+        checkBoxBot.setText("Замкнуть");
+        checkBoxBot.setSelected(false);
+        checkBoxBot.selectedProperty().addListener((ov, old_val, new_val) -> {
+            checkBoxTop.setSelected(new_val);
+            boolean closedByHorizontal = checkBoxLeft.isSelected()&&checkBoxRight.isSelected();
+            UNIVERSE_TYPE = new_val
+                    ?(closedByHorizontal ?UniverseType.CLOSED :UniverseType.CLOSED_BY_VERTICAL)
+                    :(closedByHorizontal ?UniverseType.CLOSED_BY_HORIZONTAL :UniverseType.LIMITED);
+        });
+
+        checkBoxLeft = new CheckBox();
+        checkBoxLeft.setSelected(true);
+        checkBoxLeft.selectedProperty().addListener((ov, old_val, new_val) -> {
+            checkBoxRight.setSelected(new_val);
+            boolean closedByVertical = checkBoxTop.isSelected()&&checkBoxBot.isSelected();
+            UNIVERSE_TYPE = new_val
+                    ?(closedByVertical ?UniverseType.CLOSED :UniverseType.CLOSED_BY_HORIZONTAL)
+                    :(closedByVertical ?UniverseType.CLOSED_BY_VERTICAL :UniverseType.LIMITED);
+        });
+
+        checkBoxRight = new CheckBox();
+        checkBoxRight.setSelected(true);
+        checkBoxRight.selectedProperty().addListener((ov, old_val, new_val) -> {
+            checkBoxLeft.setSelected(new_val);
+            boolean closedByVertical = checkBoxTop.isSelected()&&checkBoxBot.isSelected();
+            UNIVERSE_TYPE = new_val
+                    ?(closedByVertical ?UniverseType.CLOSED :UniverseType.CLOSED_BY_HORIZONTAL)
+                    :(closedByVertical ?UniverseType.CLOSED_BY_VERTICAL :UniverseType.LIMITED);
+        });
+        root.getChildren().addAll(checkBoxBot,checkBoxLeft,checkBoxRight,checkBoxTop);
+
+        scrollBar = new ScrollBar();
+        scrollBar.setPrefSize(FORM_WIDTH/4,button.getHeight()/2);
+        scrollBar.setMin(1);
+        scrollBar.setMax(100);
+        scrollBar.setValue(10);
+        scrollBar.valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov,Number old_val, Number new_val) {
+                labelNumSpeed.setText(String.valueOf(SPEED=new_val.intValue()));
+            }
+        });
+        root.getChildren().add(scrollBar);
+
+        updateContentPosition();
         return root;
+    }
+
+    private void updateContentPosition(){
+        button.setTranslateX(FORM_WIDTH-FORM_WIDTH/7);
+        button.setTranslateY(FORM_HEIGHT-VERT_SPACE*3/4);
+
+        labelTextGen.setTranslateX(HORIZ_SPACE);
+        labelTextGen.setTranslateY(VERT_SPACE-25);
+
+        labelNumGen.setTranslateX(HORIZ_SPACE+130);
+        labelNumGen.setTranslateY(VERT_SPACE-25);
+
+        labelTextSpeed.setTranslateX(HORIZ_SPACE);
+        labelTextSpeed.setTranslateY(VERT_SPACE+TILES_COUNT_H*TILE_SIZE+5);
+
+        labelNumSpeed.setTranslateX(HORIZ_SPACE+165);
+        labelNumSpeed.setTranslateY(VERT_SPACE+TILES_COUNT_H*TILE_SIZE+5);
+
+        checkBoxTop.setTranslateX(FORM_WIDTH/2);
+        checkBoxTop.setTranslateY(VERT_SPACE/2-checkBoxTop.getHeight()/2);
+
+        checkBoxBot.setTranslateX(FORM_WIDTH/2);
+        checkBoxBot.setTranslateY(FORM_HEIGHT-VERT_SPACE/2-checkBoxBot.getHeight()/2);
+
+        checkBoxLeft.setTranslateX(HORIZ_SPACE/2-checkBoxLeft.getWidth()/2);
+        checkBoxLeft.setTranslateY(FORM_HEIGHT/2);
+
+        checkBoxRight.setTranslateX(FORM_WIDTH-HORIZ_SPACE/2-checkBoxRight.getWidth()/2);
+        checkBoxRight.setTranslateY(FORM_HEIGHT/2);
+
+        scrollBar.setTranslateX(HORIZ_SPACE);
+        scrollBar.setTranslateY(FORM_HEIGHT-VERT_SPACE+25);
     }
 
     public void stop(){
         sleeping = true;
-    }
-
-    public void newGame(){
-//        if(!sleeping)
-//            stop();
-        go();
+        Platform.runLater(new Thread(()-> button.setText("Старт")));
     }
 
     public void go(){
@@ -161,6 +253,7 @@ public class Game extends Application{
                 thread = null;
                 gens.clear();
             }
+            Platform.runLater(new Thread(()-> button.setText("Стоп")));
             (thread = new Thread(()->{
                 (task = new Task<Void>(){
                     @Override
@@ -206,13 +299,15 @@ public class Game extends Application{
                 thread = null;
                 stoped = true;
             }
+            Platform.runLater(new Thread(()-> button.setText("Старт")));
         }
 
     }
 
     private void alertBuilder(String title, String content){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
+        alert.setHeaderText("");
         alert.setContentText(content);
         alert.showAndWait();
     }
@@ -224,6 +319,6 @@ public class Game extends Application{
             for(int j=0; j<lastCells[i].length; j++)
                 grid[i][j].setColored(lastCells[i][j].isAlive());
         }
-        Platform.runLater(new Thread(()->button.setText(String.valueOf(numGen))));
+        Platform.runLater(new Thread(()-> labelNumGen.setText(String.valueOf(numGen))));
     }
 }
