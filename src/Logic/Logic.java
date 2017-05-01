@@ -1,6 +1,6 @@
 package Logic;
 
-import java.util.Random;
+import View.Tile;
 
 public class Logic {
     private int universeW;
@@ -53,16 +53,24 @@ public class Logic {
                  (((y < 0)||(y >= universeH))&&((universeType!=UniverseType.CLOSED_BY_VERTICAL   && universeType!=UniverseType.CLOSED))));
     }
 
-    public int firstGen(Cell[][] newGenCells){
-        Random random = new Random();
+    public int firstGen(Cell[][] newGenCells, Tile[][] grid){
+//        Random random = new Random();
+//        int aliveCount = 0;
+//        boolean alive;
+//        for(int i=0; i<newGenCells.length; i++)
+//            for(int j=0; j<newGenCells[i].length; j++){
+//                newGenCells[i][j] = new Cell(alive = random.nextBoolean());
+//                if(alive)
+//                    aliveCount++;
+//        }
         int aliveCount = 0;
         boolean alive;
         for(int i=0; i<newGenCells.length; i++)
             for(int j=0; j<newGenCells[i].length; j++){
-                newGenCells[i][j] = new Cell(alive = random.nextBoolean());
+                newGenCells[i][j] = new Cell(alive=grid[i][j].isColored());
                 if(alive)
                     aliveCount++;
-        }
+            }
         return aliveCount;
     }
 
